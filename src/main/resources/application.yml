@@ -1,0 +1,16 @@
+logging:
+  config: classpath:logback-spring.xml
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  http:
+    encoding:
+      charset: UTF-8
+  profiles:
+    include:
+      - user #add application-user.yml
+
+application:
+  title: 문틸리티
+  version: 1.0

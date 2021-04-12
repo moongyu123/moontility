@@ -1,0 +1,14 @@
+user: 
+  antiafk: 
+    use: false
+
+  clipboard: 
+    use: true
+    isReceiveMode: false
+    receive_method: null
+    receive_url: http://naver.com
+    send_method: null
+    send_url: www.daum.net
+    send_data: null
+    send_data_key: null
+
