@@ -2,9 +2,11 @@ package com.moongyu123.moontility.gui
 
 import com.moongyu123.moontility.gui.popup.ClipboardConfigPopup
 import com.moongyu123.moontility.scheduler.{AntiAFKScheduler, ClipboardReceiverScheduler, ClipboardSenderScheduler}
+import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 
 import scala.swing._
@@ -169,8 +171,11 @@ class GuiFrame {
       menuBar = new MenuBar{
         contents += new Menu("File"){
           contents += new MenuItem(Action("Help"){
-            val helpImage = new ImageIcon("./src/main/resources/image/help.png" ) //image resize need
-            Dialog.showMessage(message=null, icon=helpImage)
+//            val helpImage = new ImageIcon("./src/main/resources/image/help.png" ) //file path로 넣으면 jar실행시 파일못찾음
+            val helpImgStream = new ClassPathResource("image/help.png").getInputStream
+            val icon = new ImageIcon(ImageIO.read(helpImgStream))
+
+            Dialog.showMessage(message=null, icon=icon)
           })
           contents += new MenuItem(Action("Config"){
             clipboardConfigPopup.showConfig(this)
