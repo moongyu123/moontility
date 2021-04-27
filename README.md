@@ -1,7 +1,12 @@
 # moontility
 
-### application 생성 
+### 사용 기술
+#### language : scala, java
+#### framework : scala-swing, spring boot 2.2, 
+#### skill : data-jpa(sqlite), ThreadPoolTaskScheduler, sttp, httpClient, snakeYaml, java-Toolkit, java-Robot
 
+---
+### application 생성 
 #### 1. Executable jar생성
 
  mvn clean package spring-boot:repackage -Dmaven.test.skip=true
@@ -22,7 +27,7 @@
 > dmg 배포
 >> 빈 폴더 생성 후 폴더에 app파일 넣고 Disk Utility실행
 >> File - New Image - Image from Folder - 생성한 폴더 선택
->> Image Format을 read/write 로 변경/저장 .dmg 파일 생성
+>> Image Format을 read/write 로 변경/저장 .dmg 파일 생
 
 
 #### 2-2. WindowsOS
