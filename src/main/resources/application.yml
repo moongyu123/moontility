@@ -1,15 +1,25 @@
 logging:
   config: classpath:logback-spring.xml
 
+#  spring.autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration #DB를 사용하지 않을때
+#  spring.profiles.include:  - user #add application-user.yml 설정파일 다중화
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   http:
     encoding:
       charset: UTF-8
-  profiles:
-    include:
-      - user #add application-user.yml
+
+  jpa:
+    database-platform: com.moongyu123.moontility.work.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+
+  datasource:
+    url: jdbc:sqlite:${user.home}/moontility/moontility.db #${user.home} db 생성경로
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
 
 application:
   title: 문틸리티

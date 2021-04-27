@@ -6,10 +6,12 @@
     <appender name="dailyRollingFileAppender"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <prudent>true</prudent>
-        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/application/moontility/app_log.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${user.home}/moontility/logs/moontility_app_log.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
-        </rollingPolicy>-->
+        </rollingPolicy>
+
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>

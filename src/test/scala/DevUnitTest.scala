@@ -2,7 +2,9 @@ import java.awt.{MouseInfo, Robot}
 import java.io.{File, PrintWriter}
 
 import com.moongyu123.moontility.work.snakeYmlVO.{Antiafk, Clipboard, User}
+import org.apache.commons.io.{FileUtils, IOUtils}
 import org.junit.Test
+import org.springframework.core.io.ClassPathResource
 import org.yaml.snakeyaml.{DumperOptions, Yaml}
 
 class DevUnitTest {
@@ -67,10 +69,18 @@ class DevUnitTest {
   }
 
   @Test
-  def test()={
-    val str1 = "StartUp"
-    val str2 = "StartUp"
+  def getResource(): Unit ={
+//    val resUserStream = new ClassPathResource("application-user.yml").getInputStream
 
-    println(!str1.equals(str2))
+    val ios = new ClassPathResource("application.yml").getInputStream
+    val test = new ClassPathResource("application-user.yml").getFile
+//    val tempFile = File.createTempFile("tempUser",".yml")
+    FileUtils.copyInputStreamToFile(ios, test)
+    // writer = new PrintWriter(tempFile)
+
+    IOUtils.closeQuietly(ios)
+
+    println(s"test : ${test.toString}")
+
   }
 }

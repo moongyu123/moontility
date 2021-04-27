@@ -1,10 +1,13 @@
 package com.moongyu123.moontility.gui.popup
 
+import com.moongyu123.moontility.common.StartUp
 import com.moongyu123.moontility.util.HttpUtil
 import com.moongyu123.moontility.work.UserConfigWorker
+import com.moongyu123.moontility.work.entity.UserInfo
+import com.moongyu123.moontility.work.repository.UserInfoRepository
 import com.moongyu123.moontility.work.snakeYmlVO.{Antiafk, Clipboard, User}
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype
 
 import scala.swing._
@@ -14,30 +17,11 @@ import scala.swing.event.ButtonClicked
 class ClipboardConfigPopup {
   private val logger = LoggerFactory.getLogger(getClass)
 
-  @Value("${user.antiafk.use:false}")
-  val configAntiAfkUse:Boolean = false
+  @Autowired
+  val userConfigWorker:UserConfigWorker = null
 
-  @Value("${user.clipboard.use:false}")
-  val configClipboardUse:Boolean = false
-
-  @Value("${user.clipboard.isReceiveMode:false}")
-  val configClipboardIsReceiveMode:Boolean = false
-
-  @Value("${user.clipboard.receive_method:GET}")
-  val configClipboardReceiveMethod:String = ""
-  @Value("${user.clipboard.receive_url:http}")
-  val configClipboardReceiveUrl:String = ""
-  @Value("${user.clipboard.send_data:{a:b, c:d}}")
-  val configClipboardReceiveData:String = ""
-
-  @Value("${user.clipboard.send_method:GET}")
-  val configClipboardSendMethod:String = ""
-  @Value("${user.clipboard.send_url:http}")
-  val configClipboardSendUrl:String = ""
-  @Value("${user.clipboard.send_data:{a:b, c:d}}")
-  val configClipboardSendData:String = ""
-  @Value("${user.clipboard.send_data_key:content}")
-  val configClipboardSendDataKey:String = ""
+  @Autowired
+  val userInfoRepository:UserInfoRepository=null
 
   def showConfig(parent:Component): Unit={
     val frame = new Frame()
@@ -58,36 +42,28 @@ class ClipboardConfigPopup {
     val clipboardSendKeyTextField = new TextField("", 10)
     val clipboardSendTestBtn = new Button("test")
 
-
-    logger.debug(s"configAntiAfkUse : $configAntiAfkUse")
-    logger.debug(s"configClipboardUse : $configClipboardUse")
-    logger.debug(s"configClipboardIsReceiveMode : $configClipboardIsReceiveMode")
-    logger.debug(s"configClipboardReceiveMethod : $configClipboardReceiveMethod")
-    logger.debug(s"configClipboardReceiveUrl : $configClipboardReceiveUrl")
-    logger.debug(s"configClipboardReceiveData : $configClipboardReceiveData")
-    logger.debug(s"configClipboardSendMethod : $configClipboardSendMethod")
-    logger.debug(s"configClipboardSendUrl : $configClipboardSendUrl")
-    logger.debug(s"configClipboardSendData : $configClipboardSendData")
-    logger.debug(s"configClipboardSendDataKey : $configClipboardSendDataKey")
+    val userInfoOpt = Option(userInfoRepository.findUserInfoById(StartUp.getMyUserInfoId()))
+    var userInfo = new UserInfo()
+    if(userInfoOpt.isDefined) userInfo = userInfoOpt.get
 
     //config저장값 세팅
-    if(configAntiAfkUse) antiAfkUseCombo.selection.item = "사용"
+    if(userInfo.isAntiafk_use) antiAfkUseCombo.selection.item = "사용"
     else antiAfkUseCombo.selection.item = "사용안함"
-    if(configClipboardUse) clipboardUseCombo.selection.item = "사용"
+    if(userInfo.isClipboard_use) clipboardUseCombo.selection.item = "사용"
     else clipboardUseCombo.selection.item = "사용안함"
-    if(configClipboardIsReceiveMode) clipboardModeCombo.selection.item = "수신"
+    if(userInfo.isClipboard_receive_mode) clipboardModeCombo.selection.item = "수신"
     else clipboardModeCombo.selection.item = "송신"
 
-    if(configClipboardReceiveMethod == "GET") clipboardReceiveMethodCombo.selection.item = "GET"
+    if(userInfo.getClipboard_receive_method == "GET") clipboardReceiveMethodCombo.selection.item = "GET"
     else clipboardReceiveMethodCombo.selection.item="POST"
-    clipboardReceiveUrlTextField.text = configClipboardReceiveUrl
-    clipboardReceiveDataTextArea.text = configClipboardReceiveData
+    clipboardReceiveUrlTextField.text = userInfo.getClipboard_receive_url
+    clipboardReceiveDataTextArea.text = userInfo.getClipboard_receive_data
 
-    if(configClipboardSendMethod == "GET") clipboardSendMethodCombo.selection.item = "GET"
+    if(userInfo.getClipboard_send_method == "GET") clipboardSendMethodCombo.selection.item = "GET"
     else clipboardSendMethodCombo.selection.item="POST"
-    clipboardSendUrlTextField.text = configClipboardSendUrl
-    clipboardSendDataTextArea.text = configClipboardSendData
-    clipboardSendKeyTextField.text = configClipboardSendDataKey
+    clipboardSendUrlTextField.text = userInfo.getClipboard_send_url
+    clipboardSendDataTextArea.text = userInfo.getClipboard_send_data
+    clipboardSendKeyTextField.text = userInfo.getClipboard_send_data_key
 
     val saveConfig = new Button("저장")
 
@@ -164,33 +140,75 @@ class ClipboardConfigPopup {
         val textOnButton = clickButton.text
 
         if(clickButton == saveConfig){
+          val userInfo = new UserInfo()
+          userInfo.setId(StartUp.getMyUserInfoId())
+
           val user = new User
           val antiafk = new Antiafk
-          if(antiAfkUseCombo.selection.item == "사용" )antiafk.setUse(true)
-          else antiafk.setUse(false)
+          if(antiAfkUseCombo.selection.item == "사용" ){
+            antiafk.setUse(true)
+            userInfo.setAntiafk_use(true)
+          }else{
+            antiafk.setUse(false)
+            userInfo.setAntiafk_use(false)
+          }
 
           val clipboard = new Clipboard
-          if(clipboardUseCombo.selection.item == "사용") clipboard.setUse(true)
-          else clipboard.setUse(false)
-          if(clipboardModeCombo.selection.item == "수신") clipboard.setReceiveMode(true)
-          else clipboard.setReceiveMode(false)
-          if(clipboardReceiveMethodCombo.selection.item == "GET") clipboard.setReceive_method("GET")
-          else clipboard.setReceive_method("POST")
-          if(clipboardSendMethodCombo.selection.item == "GET") clipboard.setSend_method("GET")
-          else clipboard.setSend_method("POST")
+          if(clipboardUseCombo.selection.item == "사용") {
+            clipboard.setUse(true)
+            userInfo.setClipboard_use(true)
+          }else {
+            clipboard.setUse(false)
+            userInfo.setClipboard_use(false)
+          }
+
+          if(clipboardModeCombo.selection.item == "수신") {
+            clipboard.setReceiveMode(true)
+            userInfo.setClipboard_receive_mode(true)
+          }else{
+            clipboard.setReceiveMode(false)
+            userInfo.setClipboard_receive_mode(false)
+          }
+
+          if(clipboardReceiveMethodCombo.selection.item == "GET") {
+            clipboard.setReceive_method("GET")
+            userInfo.setClipboard_receive_method("GET")
+          }else {
+            clipboard.setReceive_method("POST")
+            userInfo.setClipboard_receive_method("POST")
+          }
+
+          if(clipboardSendMethodCombo.selection.item == "GET") {
+            clipboard.setSend_method("GET")
+            userInfo.setClipboard_send_method("GET")
+          }else {
+            clipboard.setSend_method("POST")
+            userInfo.setClipboard_send_method("POST")
+          }
 
           clipboard.setReceive_url(clipboardReceiveUrlTextField.text)
+          userInfo.setClipboard_receive_url(clipboardReceiveUrlTextField.text)
+
           clipboard.setReceive_data(clipboardReceiveDataTextArea.text)
+          userInfo.setClipboard_receive_data(clipboardReceiveDataTextArea.text)
+
           clipboard.setSend_url(clipboardSendUrlTextField.text)
+          userInfo.setClipboard_send_url(clipboardSendUrlTextField.text)
+
           clipboard.setSend_data(clipboardSendDataTextArea.text)
+          userInfo.setClipboard_send_data(clipboardSendDataTextArea.text)
+
           clipboard.setSend_data_key(clipboardSendKeyTextField.text)
+          userInfo.setClipboard_send_data_key(clipboardSendKeyTextField.text)
 
           user.setAntiafk(antiafk)
           user.setClipboard(clipboard)
 
           logger.debug(s"save config data ==> ${user.toString}")
+          logger.debug(s"save config data ==> ${userInfo.toString}")
 
-          val result = new UserConfigWorker().saveUserConfig(user)
+          val result = userConfigWorker.saveUserConfig(userInfo)
+//          val result = userConfigWorker.saveUserConfigByYml(user)
           if(result){
             val res = Dialog.showConfirmation(configPopup,
               "저장되었습니다. 다음 프로그램부터 적용됩니다.(YES:종료, NO:종료하지 않음)",

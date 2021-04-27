@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import com.moongyu123.moontility.common.StartUp
 import com.moongyu123.moontility.util.{ClipboardUtil, HttpUtil}
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.{Qualifier, Value}
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.scheduling.Trigger
 import org.springframework.scheduling.support.PeriodicTrigger
 import org.springframework.stereotype.Component
@@ -18,21 +18,13 @@ import org.springframework.stereotype.Component
 class ClipboardReceiverScheduler extends DynamicAbstractScheduler {
   private val logger = LoggerFactory.getLogger(getClass)
 
-  @Value("${user.clipboard.receive_method:GET}")
-  val configClipboardReceiveMethod:String = ""
-
-  @Value("${user.clipboard.receive_url:http}")
-  val configClipboardReceiveUrl:String = ""
-
-  @Value("${user.clipboard.send_data:{a:b, c:d}}")
-  val configClipboardReceiveData:String = ""
-
   override def runner(): Unit = {
     var siteClipboardText = ""
-    if(configClipboardReceiveMethod == "GET"){
-      siteClipboardText = HttpUtil.sttpGet(configClipboardReceiveUrl)
-    }else if(configClipboardReceiveMethod == "POST"){
-      siteClipboardText = HttpUtil.sttpPost(configClipboardReceiveUrl, configClipboardReceiveData)
+    val myInfo = StartUp.getMyUserInfo
+    if(myInfo.getClipboard_receive_method == "GET"){
+      siteClipboardText = HttpUtil.sttpGet(myInfo.getClipboard_receive_url)
+    }else if(myInfo.getClipboard_receive_method == "POST"){
+      siteClipboardText = HttpUtil.sttpPost(myInfo.getClipboard_receive_url, myInfo.getClipboard_receive_data)
     }
 
     val beforeClipboardText = StartUp.getBeforeClipboard() // 이전 클립보드 내용
@@ -42,6 +34,7 @@ class ClipboardReceiverScheduler extends DynamicAbstractScheduler {
       return
     }
     if (siteClipboardText.nonEmpty && siteClipboardText != clipboardText) {
+      logger.debug(s"siteClipboardText : $siteClipboardText")
       ClipboardUtil.copy(siteClipboardText) //클립보드 변경
     }
   }

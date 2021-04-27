@@ -1,7 +1,10 @@
 package com.moongyu123.moontility.gui
 
+import com.moongyu123.moontility.common.StartUp
 import com.moongyu123.moontility.gui.popup.ClipboardConfigPopup
 import com.moongyu123.moontility.scheduler.{AntiAFKScheduler, ClipboardReceiverScheduler, ClipboardSenderScheduler}
+import com.moongyu123.moontility.work.entity.UserInfo
+import com.moongyu123.moontility.work.repository.UserInfoRepository
 import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import org.slf4j.LoggerFactory
@@ -13,7 +16,11 @@ import scala.swing._
 import scala.swing.event.{ButtonClicked, SelectionChanged}
 
 /*
-https://www.youtube.com/watch?v=KSG6EzxR9es
+scala swing 참고
+- https://www.youtube.com/watch?v=KSG6EzxR9es
+- https://otfried.org/scala/gui.html
+- https://plus.cs.aalto.fi/o1/2019/w12/ch03/
+
 Swing.HStrut : 양옆으로 띄우기
 Swing.VStrut : 위아래로 띄우기
 Swing.HGlue : 양옆 붙이기(?)
@@ -28,12 +35,12 @@ class GuiFrame {
   @Value("${application.version}")
   protected val appVersion:String = ""
 
-  @Value("${user.antiafk.use:false}")
+  /*@Value("${user.antiafk.use:false}")
   val configAntiAfkUse:Boolean = false
   @Value("${user.clipboard.use:false}")
   val configClipboardUse:Boolean = false
   @Value("${user.clipboard.isReceiveMode:false}")
-  val configClipboardIsReceiveMode:Boolean = false
+  val configClipboardIsReceiveMode:Boolean = false*/
 
   @Autowired
   val antiAFKScheduler:AntiAFKScheduler=null
@@ -47,15 +54,22 @@ class GuiFrame {
   @Autowired
   val clipboardConfigPopup:ClipboardConfigPopup=null
 
+  @Autowired
+  val userInfoRepository:UserInfoRepository=null
+
   def restrictHeight(s: Component) {
     s.maximumSize = new Dimension(Short.MaxValue, s.preferredSize.height)
   }
 
   def start(args: Array[String]): Unit = {
 
+    val userInfoOpt = Option(userInfoRepository.findUserInfoById(StartUp.getMyUserInfoId()))
+    var userInfo = new UserInfo()
+    if(userInfoOpt.isDefined) userInfo = userInfoOpt.get
+
     //기능1. 자리비움영역
     val fn1BtnOnOff = new ToggleButton("ON")
-    if(configAntiAfkUse) fn1BtnOnOff.selected = true
+    if(userInfo.isAntiafk_use) fn1BtnOnOff.selected = true
     else fn1BtnOnOff.text = "OFF"
 
     val fn1LabelInfo = new Label("1.자리안비움")
@@ -68,7 +82,7 @@ class GuiFrame {
           val clickButton = clickEvent.source
           val textOnButton = clickButton.text
 
-          println(s"clickButton : $clickButton , textOnButton: $textOnButton" )
+          logger.debug(s"clickButton : $clickButton , textOnButton: $textOnButton" )
           //기능1. 자리비움 ONOFF
           if(clickButton == fn1BtnOnOff) {
             if(textOnButton == "ON"){   //자리비움 방지 종료
@@ -90,7 +104,7 @@ class GuiFrame {
 
     //기능2. 클립보드 전송
     val fn2BtnOnOff = new ToggleButton("ON")
-    if(configClipboardUse) fn2BtnOnOff.selected = true
+    if(userInfo.isClipboard_use) fn2BtnOnOff.selected = true
     else fn2BtnOnOff.text = "OFF"
 
     val fn2LabelInfo = new Label("2.VDI 클립보드전송")
@@ -103,7 +117,7 @@ class GuiFrame {
     val fn2RadioStatus2 = new RadioButton("송신")
     new ButtonGroup(fn2RadioStatus1, fn2RadioStatus2)
     fn2RadioStatus2.selected=true
-    if(configClipboardIsReceiveMode) fn2RadioStatus1.selected = true
+    if(userInfo.isClipboard_receive_mode) fn2RadioStatus1.selected = true
 
     val fn2ContentDetail = new BoxPanel(Orientation.Horizontal){
       reactions += {
