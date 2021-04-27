@@ -36,6 +36,7 @@ class ClipboardReceiverScheduler extends DynamicAbstractScheduler {
     if (siteClipboardText.nonEmpty && siteClipboardText != clipboardText) {
       logger.debug(s"siteClipboardText : $siteClipboardText")
       ClipboardUtil.copy(siteClipboardText) //클립보드 변경
+      StartUp.setBeforeClipboard(siteClipboardText)
     }
   }
 

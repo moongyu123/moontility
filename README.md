@@ -23,8 +23,12 @@
      
     -> jar 생성 경로 : target/moontility-${version}-SNAPSHOT.jar
 
+#### 2-1. 손쉬운 사용
+    java -jar moontility-0.0.1.SNAPSHOT.jar
+    
+    를 실행하는 sh or cmd 파일 만들어서 사용
 
-#### 2-1. MACOS
+#### 2-2. MACOS app파일 만들기 
 > download AppMaker
 >> https://sourceforge.net/projects/jarappmaker/
 >> AppMaker실행 안될때 : sudo su chmod 777 appMaker.dmg 로 권한변경 후 실행
@@ -41,6 +45,6 @@
 >> Image Format을 read/write 로 변경/저장 .dmg 파일 생성 
 
 
-#### 2-2. WindowsOS
+#### 2-3. WindowsOS exe파일 만들기
 
 > TODO
