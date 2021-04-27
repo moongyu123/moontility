@@ -1,19 +1,19 @@
 # moontility
 ### 프로젝트 설명
 + 자리안비움 
-    + 일정시간(2분)동안 움직임이 없으면 마우스를 움직여서 컴퓨터가 잠기자 않도록 합니다.
+    + 일정시간(2분)동안 움직임이 없으면 마우스를 움직여서 컴퓨터가 잠기지 않도록 합니다.
      
 + VDI클립보드 전송 
-    + 망분리 개발환경에서 클립보드 전송이 어려울 경우(가상화 -> 인터넷PC). 웹사이트등을 이용하여 클립보드를 가져올 수 있도록 도와줍니다.
+    + 분리망 개발환경에서 클립보드 전송이 어려울 경우(가상화 -> 인터넷PC). 웹사이트등을 이용하여 클립보드를 가져올 수 있도록 도와줍니다.
     + 수신(receive) : 매1초마다 클립보드 내용이 바뀐경우 인터넷PC로 내용을 가져와서 클립보드에 저장  
-    + 송신(send) : 매 1초마다 클립보드 내용이 바뀐경우 웹사이트로 내 클립보드내용을 보냄 
+    + 송신(send) : 매 1초마다 클립보드 내용이 바뀐경우 웹사이트로 내 클립보드 내용을 보냄 
     + File - Config에서 설정
 
 ---
 ### 사용 기술
 #### language : scala, java
-#### framework : scala-swing, spring boot 2.2, 
-#### skill : data-jpa(sqlite), ThreadPoolTaskScheduler, sttp, httpClient, snakeYaml, java-Toolkit, java-Robot
+#### framework : scala-swing, spring boot 2.2 
+#### skill : data-jpa(sqlite), snakeYaml, ThreadPoolTaskScheduler, httpClient, sttp, java-Toolkit, java-Robot
 
 ---
 ### application 생성 
